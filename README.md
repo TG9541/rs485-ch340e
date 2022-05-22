@@ -2,9 +2,9 @@
 
 [![Order from OSH Park](https://oshpark.com/assets/badge-5b7ec47045b78aef6eb9d83b3bac6b1920de805e9a0c227658eac6e19a045b9c.png)](https://oshpark.com/shared_projects/ijwz2rTz)
 
-I needed a USB-RS485 dongle with reliable automatic direction control but it was impossible to find anything that's both reliable and cheap (not to speak of small). The "budget" cmmercial USB-RS485 dongles "try" to implement direction controll with the host's Tx signal. The timing of such a solution is tricky (and potentially unreliable) undless a [questionable "dominant-recessive"](https://hackaday.io/project/167532-modbus-things-with-stm8-eforth/log/168474-finding-the-culprit) approach to RX-TX switching with a "CAN network style" recessive default state is used. Such a hack is certainly not RS485 compliant and may no longer work if several nodes are connected, the bus cable is long, at higher bit-rates, or in any combination of that.
+I needed a USB-RS485 dongle with reliable automatic direction control but it was impossible to find anything that's both reliable and cheap (not to speak of small). The "budget" cmmercial USB-RS485 dongles "try" to implement direction controll with the host's Tx signal. The timing of such a solution is tricky (and potentially unreliable). A "popular" work-around is using a [questionable "dominant-recessive"](https://hackaday.io/project/167532-modbus-things-with-stm8-eforth/log/168474-finding-the-culprit) approach to RX-TX switching with a "CAN network style" recessive default state. Such a hack is certainly not RS485 compliant and may randomly fail if multiple nodes are connected, the bus cable is long, at higher bit-rates, if the weather changes, or in any combination of that.
 
-Fortunately, the very cheap CH340E provides a true direction signal that can be used for controlling an RS485 transceiver with "nominal" timing. I was surprised that there are still no cheap CH340E based RS485 dongles - so I decided to make one. This repository provides a small CH340E based configurable RS485 or TTL 2/3-wire USB dongle.
+Fortunately, the very cheap CH340E provides a true RX/TX direction signal that can be used for controlling an RS485 transceiver with perfect timing. I was surprised that there are still no cheap CH340E based RS485 dongles on the market - so I decided to make one. This repository provides a small CH340E based configurable RS485 or TTL 2/3-wire USB dongle.
 
 If you're "shopping" for ideas how to use this solution down for a mass-market product: it's certainly possible to make solution with a minimal BOM, or one with additional robustness. Feel free to writen me an [issue](https://github.com/TG9541/rs485-ch340e/issues) if you want to learn how.
 
@@ -21,13 +21,14 @@ If you're "shopping" for ideas how to use this solution down for a mass-market p
 
 The BOM is in the doc folder.
 
-Note: if U3 is populated, J3 selects either 5V (default) or 3.3V (1-2 open, 2-3 closed) operation of U1. This configuration option has not been testd.
+Note: the supply voltage of U1 can be selected with J3. It is either 5V (default) or 3.3V (1-2 open, 2-3 closed). This configuration option has not been tested.
 
 ## RS485 configuration:
 
-Note: SW1 controlls "TX-RX echo" (pin1-1 closed) or "no echo" (pin2-3 closed). The latter is standard RS485 functionality. If switching isn't required the pads can be bridged with a bit of solder.
+The built-in CH340E 3.3V LDO can provide a 3.3V supply for the RS485 transceiver which makes populating the linear voltage regulator U3 (XC6206P332MR) optional. For most applications it's better to populate U3 since the maximum number of RS485 nodes that can be connected to the bus might be limited by the current that the internal LDO can provide.
 
-When using the built-in CH340E 3.3V LDO the maximum number of RS485 nodes is limited by the current provided by the internal LDO. For most applications it's betterto populate U3 (XC6206P332MR).
+Note: SW1 controlls "TX-RX echo" (pin1-1 closed) or "no echo" (pin2-3 closed, this is standard RS485 functionality). If switching isn't required the pads can be bridged with a bit of solder. Most people won't need switching and in a re-design I would certainly replace SW1 with a jumper.
+
 
 ### Core RS485 configuration (limited fan-out): 
 Populate the following:
